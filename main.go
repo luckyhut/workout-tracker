@@ -1,16 +1,19 @@
 package main
 
 import (
-	"fmt"
+	"html/template"
 	"net/http"
 )
 
+var tpl *template.Template
+
 func main() {
+	tpl, _ = template.ParseFiles("templates/index.html")
 	sm := http.NewServeMux()
-	sm.HandleFunc("/", handlerIndex)
+	sm.HandleFunc("/", handlerAdd)
 	http.ListenAndServe(":8080", sm)
 }
 
-func handlerIndex(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "hello world index")
+func handlerAdd(w http.ResponseWriter, r *http.Request) {
+	tpl.Execute(w, nil)
 }
