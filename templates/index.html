@@ -5,15 +5,15 @@
   </head>
   <body>
     <h1>Log a workout</h1>
-    <form method="POST" action="/add">
+    <form method="POST" action="/workouts">
       <label for="exercise">Exercise:</label><br>
       <input type="text" id="exercise" name="exercise" required><br><br>
 
       <label for="weight">Weight:</label><br>
-      <input type="text" id="weight" name="weight" required><br><br>
+      <input type="number" id="weight" name="weight" required><br><br>
 
       <label for="reps">Reps:</label><br>
-      <input type="text" id="reps" name="reps" required><br><br>
+      <input type="number" id="reps" name="reps" required><br><br>
 
       <button type="submit">Log Workout</button>
     </form>
