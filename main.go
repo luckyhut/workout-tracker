@@ -31,11 +31,11 @@ func main() {
 	sm := http.NewServeMux()
 	sm.HandleFunc("/", handlerIndex)
 	sm.HandleFunc("POST /workouts", handlerWorkout)
-	http.ListenAndServe(":8080", sm)
+	sm.HandleFunc("POST /reset-db", handlerResetDB)
+	http.ListenAndServe(":4000", sm)
 }
 
 func initWorkoutsTbl() {
-
 	createTblSQL := `
 	CREATE TABLE IF NOT EXISTS workouts (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -48,7 +48,6 @@ func initWorkoutsTbl() {
 	if err != nil {
 		log.Fatal("Error setting up Workouts DB: ", err)
 	}
-
 }
 
 func handlerIndex(w http.ResponseWriter, r *http.Request) {
@@ -57,9 +56,7 @@ func handlerIndex(w http.ResponseWriter, r *http.Request) {
 
 func handlerWorkout(w http.ResponseWriter, r *http.Request) {
 	_ = r.ParseForm()
-
 	log.Println("logged:", r.FormValue("exercise"), r.FormValue("weight"), r.FormValue("reps"))
-
 	// send to db
 	stmt, err := db.Prepare(
 		"INSERT INTO workouts(exercise, weight, reps) VALUES (?, ?, ?)",
@@ -74,6 +71,20 @@ func handlerWorkout(w http.ResponseWriter, r *http.Request) {
 		r.FormValue("weight"),
 		r.FormValue("reps"),
 	)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
 
+func handlerResetDB(w http.ResponseWriter, r *http.Request) {
+	stmt, err := db.Prepare(
+		"DELETE FROM workouts",
+	)
+	if err != nil {
+		log.Println("Error preparing delete statement: ", err)
+	}
+	_, err = stmt.Exec()
+	if err != nil {
+		log.Println("Error deleting records from DB: ", err)
+	}
+	log.Println("Database records deleted succesfully.")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
