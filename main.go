@@ -66,11 +66,14 @@ func handlerWorkout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer stmt.Close()
-	_, _ = stmt.Exec(
+	_, err = stmt.Exec(
 		r.FormValue("exercise"),
 		r.FormValue("weight"),
 		r.FormValue("reps"),
 	)
+	if err != nil {
+		log.Println("Error adding info to database: ", err)
+	}
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
